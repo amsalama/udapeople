@@ -143,18 +143,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      # - restore_cache:
-      #     keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: scan the code
           command: |
             cd backend
-            npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical --force
       - slack/status
 
   # deploy-infrastructure:
