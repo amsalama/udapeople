@@ -66,13 +66,21 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm install
+      - restore_cache:
+          keys: [backend-build]
+      - run:
           name: Back-end build
           command: |
-            # Your code here
-            exit 1
+            cd backend
+            npm run build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - slack/status
 
   test-frontend:
     docker:
