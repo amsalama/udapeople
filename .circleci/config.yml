@@ -37,7 +37,8 @@ commands:
               cd backend
               npm install
               npm run migrations:revert
-            fiorbs:
+            fi
+orbs:
   slack: circleci/slack@3.4.2
 jobs:
   build-frontend:
