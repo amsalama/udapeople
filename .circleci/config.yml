@@ -84,35 +84,73 @@ jobs:
 
   test-frontend:
     docker:
-      # Docker image here
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependecies for front-end
+          command: |
+            cd frontend
+            npm i
+      - run:
+          name: Test code for front-end
+          command: |
+            cd frontend
+            npm run test
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
+      - slack/status
 
   test-backend:
     docker:
-      # Docker image here
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
-
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependecies for back-end
+          command: |
+            cd backend
+            npm i
+      - run:
+          name: Test code for back-end
+          command: |
+            cd backend
+            npm run test
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
+      - slack/status
   scan-frontend:
     docker:
-      # Docker image here
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
-
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: scan the code
+          command: |
+            cd frontend
+            npm audit fix --audit-level=critical --force
+      - slack/status
   scan-backend:
     docker:
-      # Docker image here
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: scan the code
+          command: |
+            cd backend
+            npm audit fix --audit-level=critical --force
+      - slack/status
 
   deploy-infrastructure:
     docker:
