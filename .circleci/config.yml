@@ -153,39 +153,53 @@ jobs:
             npm audit fix --audit-level=critical --force
       - slack/status
 
-  # deploy-infrastructure:
-  #   docker:
-  #   # Docker image here that supports AWS CLI
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Ensure back-end infrastructure exists
-  #         command: |
-  #           aws cloudformation deploy \
-  #             --template-file .circleci/files/backend.yml \
-  #             #--tags project=your-tag \
-  #             # --stack-name "your back-end stack name with workflow id" \
-  #             # --parameter-overrides ID="your workflow id"
-  #             exit 1
-  #     - run:
-  #         name: Ensure front-end infrastructure exist
-  #         command: |
-  #           aws cloudformation deploy \
-  #             --template-file .circleci/files/frontend.yml \
-  #             #--tags project=your-tag \
-  #             # --stack-name "your front-end stack name with workflow id" \
-  #             # --parameter-overrides ID="your workflow id"
-  #             exit 1
-  #     - run:
-  #         name: Add back-end ip to ansible inventory
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - project/.circleci/ansible/inventory.txt
-  #     # Here's where you will add some code to rollback on failure
+    deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum -y install tar gzip
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags Name=udapeople-backend-ec2-${CIRCLE_WORKFLOW_ID} \
+              --region ${AWS_DEFAULT_REGION} \
+              --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags Name=udapeople-frontend-ec2-${CIRCLE_WORKFLOW_ID} \
+              --region ${AWS_DEFAULT_REGION} \
+              --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            PUBLIC_DNS=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filters 'Name=tag:Name,Values=backend-*' --query "Reservations[*].Instances[0].PublicDnsName" --output text)
+            echo ${PUBLIC_DNS}
+            curl -H "Content-Type: text/plain" \
+               -H "token: ${CIRCLE_WORKFLOW_ID}" \
+               --request PUT \
+               --data ${PUBLIC_DNS} \
+               https://api.memstash.io/values/public_dns
+            echo "${PUBLIC_DNS}"
+            echo "$PUBLIC_DNS">> .circleci/ansible/inventory.txt
+            echo "${CIRCLE_WORKFLOW_ID}"
+            yum -y install tar gzip jq npm
+            cat ".circleci/ansible/inventory.txt"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci/ansible
+      - destroy-environment
+
   # configure-infrastructure:
   #   docker:
   #     # Docker image here that supports Ansible
@@ -325,11 +339,11 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
