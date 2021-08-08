@@ -99,7 +99,7 @@ jobs:
             cd frontend
             npm i
       - run:
-          name: Test code for front-end
+          name: Run front-end Test
           command: |
             cd frontend
             npm run test
@@ -121,7 +121,7 @@ jobs:
             cd backend
             npm i
       - run:
-          name: Test code for back-end
+          name: Run back-end Test
           command: |
             cd backend
             npm run test
@@ -137,7 +137,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: scan the code
+          name: Scan Frontend Dependencies
           command: |
             cd frontend
             npm install
@@ -151,7 +151,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: scan the code
+          name: scan Backend Dependencies
           command: |
             cd backend
             npm audit fix --audit-level=critical --force
@@ -267,6 +267,7 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             cat .env
             npm i
+            npm audit fix
             npm run migrations
             npm run migrations >> result.txt
       - run:
@@ -338,12 +339,13 @@ jobs:
             cd backend
             npm i
             npm run build
+            npm audit fix
       - run:
           name: "tar archiv"
           command: |
             pwd
             ls -l 
-            tar -cf backend.tar ./backend/dist
+            tar -cf backend.tar ./backend/
       - run:
           name: Deploy backend
           command: |
@@ -369,7 +371,7 @@ jobs:
             # your code here
             echo ${CIRCLE_WORKFLOW_ID}
             BACKENDIP=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/public_dns)
-            STATUSAPI="https://${BACKENDIP}:3030/api/status"
+            STATUSAPI="http://${BACKENDIP}:3030/api/status"
             if curl -s --head ${STATUSAPI}
             then
               echo "OK"
@@ -380,10 +382,10 @@ jobs:
           name: Frontend smoke test.
           command: |
             # your code here
-            URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com/#/employees"
             if ( curl -s ${URL} | grep "Welcome" )
             then
-              return 0
+              return 1
             else
               return 1
             fi
@@ -449,31 +451,31 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [test-feature-branch]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [configure-infrastructure]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [test-feature-branch]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      - run-migrations
+      # requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
       - deploy-backend:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+          requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:

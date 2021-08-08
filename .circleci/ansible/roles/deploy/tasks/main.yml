@@ -2,13 +2,16 @@
   become: true
   copy:
     src: /root/project/backend.tar
-    dest: /home/ubuntu/backend/
+    dest: /home/ubuntu/
 
-- name: "un tar"
+- name: "Install"
   become: true
   shell: |
     cd backend/
     tar -xvf backend.tar
+    chown -R 777 ubuntu:ubuntu  /home/ubuntu/backend
+    ls -ld /home/ubuntu/backend
+    ls -l /home/ubuntu/backend/
 - name: "PM2 Start"
   become: true
   shell: |
