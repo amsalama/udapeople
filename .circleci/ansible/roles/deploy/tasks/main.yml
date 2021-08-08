@@ -9,7 +9,7 @@
   shell: |
     cd backend/
     tar -xvf backend.tar
-    chown -R 777 ubuntu:ubuntu  /home/ubuntu/backend
+    chown -R  ubuntu:ubuntu  /home/ubuntu/backend
     ls -ld /home/ubuntu/backend
     ls -l /home/ubuntu/backend/
 - name: "PM2 Start"
