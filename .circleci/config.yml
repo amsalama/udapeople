@@ -362,8 +362,8 @@ jobs:
           command: |
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-      # - revert-migrations
-      # - destroy-environment
+      - revert-migrations
+      - destroy-environment
   smoke-test:
     docker:
       - image: python:3.7-alpine3.11
@@ -400,8 +400,8 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment
-      - revert-migrations
+      # - destroy-environment
+      # - revert-migrations
 
   # smoke-test:
   #   docker:
@@ -481,12 +481,12 @@ workflows:
       #     requires: [deploy-infrastructure]
       # - run-migrations
       # requires: [configure-infrastructure]
-      # - deploy-frontend
+      - deploy-frontend
       # requires: [run-migrations]
       - deploy-backend
         # requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
