@@ -1,8 +1,8 @@
-- name: "Save Enviroment Variables"
-  become: true
-  copy:
-    src: /root/project/backend/.env
-    dest: /home/ubuntu/backend/
+# - name: "Save Enviroment Variables"
+#   become: true
+#   copy:
+#     src: /root/project/backend/.env
+#     dest: /home/ubuntu/backend/
 
 - name: "Update/upgrade packages."
   become: true
