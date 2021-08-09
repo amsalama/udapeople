@@ -25,7 +25,7 @@ commands:
             curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${FAILRESULT} https://api.memstash.io/values/migration_result
       - run:
           name: Revert migrations
-          when: always
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS=$(curl -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_result)
@@ -435,9 +435,10 @@ jobs:
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             aws cloudformation deploy \
-              --template-name udapeople-cloudfront \
+              --template-file .circleci/files/cloudfront.yml
+              --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
-              --tages project=udapeople &
+              --tags project=udapeople &
             if [[ "${STACKS[0]} =~ "${OLDWORKFLOWID}"  ]]
             then
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
