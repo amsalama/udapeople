@@ -435,18 +435,18 @@ jobs:
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             echo "STACK: ${STACKS:19}"
-            aws cloudformation deploy --debug \
+            aws cloudformation deploy  \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
               --tags project=udapeople
-            if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
-            then
-              aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OLDWORKFLOWID}"
-            fi
+            # if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
+            # then
+            #   aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
+            #   aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
+            #   aws cloudformation delete-stack --stack-name "udapeople-backend-${OLDWORKFLOWID}"
+            # fi
       - persist_to_workspace:
           root: .
           paths:
