@@ -469,6 +469,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
+            #!/bin/bash -eo pipefail
             pwd
             export OLDWORKFLOWID=$(aws cloudformation list-exports \
               --query "Exports[?Name==\`WorkflowID\`].Value" \
