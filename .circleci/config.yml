@@ -479,75 +479,20 @@ jobs:
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             echo "STACK: ${STACKS:19}"
             echo "CIRCLE_WORKFLOW_ID : ${CIRCLE_WORKFLOW_ID}"
-            TEST=`aws cloudformation deploy --debug \
+            aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
-              --tags project=udapeople &`
-            echo "$TEST ***********************"
+              --tags project=udapeople &
+
+
+
             if [[ "${STACKS:19}" != "${OLDWORKFLOWID}" ]]
             then
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLDWORKFLOWID}"
             fi
-
-  # smoke-test:
-  #   docker:
-  #     # Lightweight Docker image
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Get backend url
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Backend smoke test.
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Frontend smoke test.
-  #         command: |
-  #           # your code here
-  #     # Here's where you will add some code to rollback on failure
-  # cloudfront-update:
-  #   docker:
-  #     # Docker image here that supports AWS CLI
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Update cloudfront distribution
-  #         command: |
-  #           # your code here
-  #     # Here's where you will add some code to rollback on failure
-
-# cleanup:
-#   docker:
-#     # Docker image here
-#   steps:
-#     # Checkout code from git
-#     - run:
-#         name: Get old stack workflow id
-#         command: |
-#           # your code here
-#           export OldWorkflowID="the id here"
-#           export STACKS=[] #put the list of stacks here
-#     - run:
-#         name: Remove old stacks and files
-#         command: |
-#           if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-#           then
-#             # your code here
-#           fi
-
 workflows:
   default:
     jobs:
@@ -578,5 +523,5 @@ workflows:
       #     requires: [deploy-backend, deploy-frontend]
       - cloudfront-update
       # requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      - cleanup
+        # requires: [cloudfront-update]
