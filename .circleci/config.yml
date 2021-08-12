@@ -479,12 +479,12 @@ jobs:
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             echo "STACK: ${STACKS:19}"
             echo "CIRCLE_WORKFLOW_ID : ${CIRCLE_WORKFLOW_ID}"
-            aws cloudformation deploy --debug \
+            TEST=`aws cloudformation deploy --debug \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
-              --tags project=udapeople &
-            echo "Deploy ***********************"
+              --tags project=udapeople &`
+            echo "$TEST ***********************"
             if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
             then
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
