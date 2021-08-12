@@ -441,7 +441,7 @@ jobs:
               --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
               --tags project=udapeople
-            # if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
+            # if [[ "${STACKS:19}" != "${OLDWORKFLOWID}" ]]
             # then
             #   aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
             #   aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
@@ -485,7 +485,7 @@ jobs:
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
               --tags project=udapeople &`
             echo "$TEST ***********************"
-            if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
+            if [[ "${STACKS:19}" != "${OLDWORKFLOWID}" ]]
             then
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
