@@ -491,7 +491,7 @@ jobs:
             if [[ "${STACKS:19}" != "${OLDWORKFLOWID}" ]]
             then
               echo "Delete OLD infrastructure : udapeople-${OLDWORKFLOWID}"
-              aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
+              aws s3 rb "s3://udapeople-${OLDWORKFLOWID}" --force
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLDWORKFLOWID}"
             else
