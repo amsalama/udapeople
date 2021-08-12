@@ -482,6 +482,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
+              --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
               --tags project=udapeople &
 
@@ -489,6 +490,7 @@ jobs:
 
             if [[ "${STACKS:19}" != "${OLDWORKFLOWID}" ]]
             then
+              echo "Delete OLD infrastructure"
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLDWORKFLOWID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLDWORKFLOWID}"
