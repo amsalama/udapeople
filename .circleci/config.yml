@@ -435,7 +435,7 @@ jobs:
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             echo "STACK: ${STACKS:19}"
-            aws cloudformation deploy \
+            aws cloudformation deploy --debug \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
@@ -479,7 +479,7 @@ jobs:
             echo Old Workflow Id:  "${OLDWORKFLOWID}"
             echo "STACK: ${STACKS:19}"
             echo "CIRCLE_WORKFLOW_ID : ${CIRCLE_WORKFLOW_ID}"
-            aws cloudformation deploy \
+            aws cloudformation deploy --debug \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
