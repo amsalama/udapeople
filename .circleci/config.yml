@@ -484,7 +484,7 @@ jobs:
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
               --tags project=udapeople &
-
+            echo "Deploy ***********************"
             if [[ "${STACKS:19}" != "${OLDWORKFLOWID}"  ]]
             then
               aws s3 rm "s3://udapeople-${OLDWORKFLOWID}" --recursive
